@@ -401,5 +401,8 @@ function seedDemo() {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-seedDemo();
+if (!localStorage.getItem('bx_seeded')) {
+  seedDemo();
+  localStorage.setItem('bx_seeded', 'true');
+}
 renderDashboard();
