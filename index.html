@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BütçeX — Akıllı Bütçe Takip</title>
+  <meta name="description" content="Gelir ve giderlerinizi kolayca takip edin, bütçe hedeflerinize ulaşın." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">₺</div>
+      <span class="logo-text">BütçeX</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
+        <span class="nav-icon">·</span>
+        <span class="nav-label">Genel Bakış</span>
+      </a>
+      <a href="#" class="nav-item" data-page="transactions" id="nav-transactions">
+        <span class="nav-icon">·</span>
+        <span class="nav-label">İşlemler</span>
+      </a>
+      <a href="#" class="nav-item" data-page="budgets" id="nav-budgets">
+        <span class="nav-icon">·</span>
+        <span class="nav-label">Bütçeler</span>
+      </a>
+      <a href="#" class="nav-item" data-page="reports" id="nav-reports">
+        <span class="nav-icon">·</span>
+        <span class="nav-label">Raporlar</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="theme-toggle" id="themeToggle">
+        <span class="theme-icon" id="themeIcon">🌙</span>
+        <span>Tema</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <button class="hamburger" id="hamburger">☰</button>
+    <span class="mobile-logo">BütçeX</span>
+    <button class="add-btn-mobile" id="addBtnMobile">+</button>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- DASHBOARD PAGE -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Genel Bakış</h1>
+          <p class="page-subtitle" id="dateDisplay"></p>
+        </div>
+        <button class="btn btn-primary" id="addTransactionBtn">
+          <span>+</span> İşlem Ekle
+        </button>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="summary-cards">
+        <div class="card summary-card income-card">
+          <div class="card-icon">₺</div>
+          <div class="card-info">
+            <span class="card-label">Toplam Gelir</span>
+            <span class="card-value" id="totalIncome">₺0,00</span>
+            <span class="card-change positive" id="incomeChange"></span>
+          </div>
+        </div>
+        <div class="card summary-card expense-card">
+          <div class="card-icon">−</div>
+          <div class="card-info">
+            <span class="card-label">Toplam Gider</span>
+            <span class="card-value" id="totalExpense">₺0,00</span>
+            <span class="card-change negative" id="expenseChange"></span>
+          </div>
+        </div>
+        <div class="card summary-card balance-card">
+          <div class="card-icon">=</div>
+          <div class="card-info">
+            <span class="card-label">Net Bakiye</span>
+            <span class="card-value" id="netBalance">₺0,00</span>
+            <span class="card-change" id="balanceChange"></span>
+          </div>
+        </div>
+        <div class="card summary-card savings-card">
+          <div class="card-icon">%</div>
+          <div class="card-info">
+            <span class="card-label">Tasarruf Oranı</span>
+            <span class="card-value" id="savingsRate">%0</span>
+            <span class="card-change" id="savingsChange"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <div class="card chart-card wide">
+          <div class="card-header">
+            <h2 class="card-title">Aylık Akış</h2>
+            <div class="chart-legend">
+              <span class="legend-dot income"></span> Gelir
+              <span class="legend-dot expense"></span> Gider
+            </div>
+          </div>
+          <canvas id="flowChart" height="200"></canvas>
+        </div>
+        <div class="card chart-card">
+          <div class="card-header">
+            <h2 class="card-title">Kategori Dağılımı</h2>
+          </div>
+          <canvas id="pieChart" height="200"></canvas>
+          <div class="pie-legend" id="pieLegend"></div>
+        </div>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Son İşlemler</h2>
+          <button class="btn btn-ghost" id="viewAllBtn">Tümünü Gör →</button>
+        </div>
+        <div class="transactions-list" id="recentTransactions">
+          <div class="empty-state">
+            <div class="empty-icon">·</div>
+            <p>Henüz işlem yok. İlk işleminizi ekleyin!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANSACTIONS PAGE -->
+    <section class="page" id="page-transactions">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">İşlemler</h1>
+          <p class="page-subtitle" id="transactionCount">0 işlem</p>
+        </div>
+        <button class="btn btn-primary" id="addTransactionBtn2">
+          <span>+</span> İşlem Ekle
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-bar">
+        <input type="text" class="filter-input" id="searchInput" placeholder="🔍 İşlem ara..." />
+        <select class="filter-select" id="filterType">
+          <option value="all">Tüm Türler</option>
+          <option value="income">Gelir</option>
+          <option value="expense">Gider</option>
+        </select>
+        <select class="filter-select" id="filterCategory">
+          <option value="all">Tüm Kategoriler</option>
+        </select>
+        <select class="filter-select" id="filterPeriod">
+          <option value="all">Tüm Zamanlar</option>
+          <option value="today">Bugün</option>
+          <option value="week">Bu Hafta</option>
+          <option value="month">Bu Ay</option>
+          <option value="year">Bu Yıl</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="transactions-list" id="allTransactions">
+          <div class="empty-state">
+            <div class="empty-icon">·</div>
+            <p>Henüz işlem yok.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUDGETS PAGE -->
+    <section class="page" id="page-budgets">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Bütçe Hedefleri</h1>
+          <p class="page-subtitle">Kategori bazlı harcama limitlerini yönetin</p>
+        </div>
+        <button class="btn btn-primary" id="addBudgetBtn">
+          <span>+</span> Bütçe Ekle
+        </button>
+      </div>
+      <div class="budgets-grid" id="budgetsGrid">
+        <div class="empty-state card">
+          <div class="empty-icon">·</div>
+          <p>Henüz bütçe hedefi yok.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORTS PAGE -->
+    <section class="page" id="page-reports">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Raporlar</h1>
+          <p class="page-subtitle">Finansal analizleriniz</p>
+        </div>
+      </div>
+      <div class="reports-grid">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Yıllık Özet</h2>
+          </div>
+          <canvas id="yearChart" height="250"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">En Çok Harcanan Kategoriler</h2>
+          </div>
+          <div id="topCategories" class="top-categories"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Aylık Karşılaştırma</h2>
+          </div>
+          <div id="monthlyComparison" class="monthly-comparison"></div>
+        </div>
+        <div class="card stats-card">
+          <div class="card-header">
+            <h2 class="card-title">İstatistikler</h2>
+          </div>
+          <div id="statsContent" class="stats-grid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ADD TRANSACTION MODAL -->
+  <div class="modal-overlay" id="transactionModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">İşlem Ekle</h2>
+        <button class="modal-close" id="closeModal">✕</button>
+      </div>
+      <form id="transactionForm">
+        <input type="hidden" id="editId" />
+
+        <!-- Type Toggle -->
+        <div class="type-toggle">
+          <button type="button" class="type-btn active" id="incomeBtn" data-type="income">
+            Gelir
+          </button>
+          <button type="button" class="type-btn" id="expenseBtn" data-type="expense">
+            Gider
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tutar (₺)</label>
+          <input type="number" class="form-input" id="amount" placeholder="0,00" min="0" step="0.01" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Açıklama</label>
+          <input type="text" class="form-input" id="description" placeholder="İşlem açıklaması..." required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Kategori</label>
+            <select class="form-input" id="category" required>
+              <option value="">Seçin...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tarih</label>
+            <input type="date" class="form-input" id="txDate" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Not (opsiyonel)</label>
+          <input type="text" class="form-input" id="note" placeholder="Ek bilgi..." />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancelModal">İptal</button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD BUDGET MODAL -->
+  <div class="modal-overlay" id="budgetModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Bütçe Hedefi Ekle</h2>
+        <button class="modal-close" id="closeBudgetModal">✕</button>
+      </div>
+      <form id="budgetForm">
+        <div class="form-group">
+          <label class="form-label">Kategori</label>
+          <select class="form-input" id="budgetCategory" required>
+            <option value="">Seçin...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Aylık Limit (₺)</label>
+          <input type="number" class="form-input" id="budgetLimit" placeholder="0,00" min="0" step="0.01" required />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancelBudgetModal">İptal</button>
+          <button type="submit" class="btn btn-primary">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
